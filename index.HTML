@@ -1,0 +1,107 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nicosia Genaral Hospital Calculator</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: auto; }
+    label { display: block; margin-top: 15px; }
+    input, select { width: 100%; padding: 8px; }
+    button { margin-top: 20px; padding: 10px 15px; font-size: 16px; }
+    #result { font-weight: bold; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h2>ΣΥΣΤΗΜΑ ΕΓΚΑΙΡΗΣ ΠΡΟΕΙΔΟΠΟΙΗΣΗΣ ΓΕΝΙΚΟΥ ΝΟΣΟΚΟΜΕΙΟΥ ΛΕΥΚΩΣΙΑΣ </h2>
+  <form id="ewsForm">
+    <label>ΑΝΑΠΝΕΥΣΤΙΚΗ ΣΥΧΝΟΤΗΤΑ (per min): <input type="number" id="rr" required /></label>
+    <label>ΚΟΡΕΣΜΟΣ ΟΞΥΓΟΝΟΥ (%): <input type="number" id="spo2" required /></label>
+    <label>ΘΕΡΜΟΚΡΑΣΙΑ (°C): <input type="number" step="0.1" id="temp" required /></label>
+    <label>ΣΥΣΤΟΛΙΚΗ Α/Π (mmHg): <input type="number" id="bp" required /></label>
+    <label>ΚΑΡΔΙΑΚΗ ΣΥΧΝΟΤΗΤΑ/ΠΑΛΜΟΣ (bpm): <input type="number" id="hr" required /></label>
+    <label>ΕΠΙΠΕΔΟ ΣΥΝΕΙΔΗΣΗΣ:
+      <select id="conscious">
+        <option value="0">ΑΣΘΕΝΗΣ ΣΕ ΕΓΡΗΓΟΡΣΗ ΜΕ ΚΑΛΗ ΕΠΙΚΟΙΝΩΝΙΑ (A)</option>
+        <option value="2"> ΑΣΘΕΝΗΣ ΑΠΑΝΤΑ ΣΕ ΛΕΚΤΙΚΑ ΕΡΕΘΙΣΜΑΤΑ(V)</option>
+        <option value="3">ΑΣΘΕΝΗΣ ΑΝΤΙΔΡΑ ΣΕ ΕΠΩΔΥΝΑ ΕΡΕΘΙΣΜΑΤΑ (P)</option>
+        <option value="3">ΑΣΘΕΝΗΣ ΔΕΝ ΑΝΤΑΠΟΚΡΙΝΕΤΑΙ ΣΕ ΚΑΝΕΝΑ ΕΡΕΘΙΣΜΑ (U)</option>
+      </select>
+    </label>
+    <label>ΧΟΡΟΓΗΣΗ ΣΥΜΠΛΗΡΩΜΑΤΙΚΟΥ ΟΞΥΓΟΝΟΥ
+      <select id="o2">
+        <option value="0">ΟΧΙ</option>
+        <option value="2">ΝΑΙ</option>
+      </select>
+    </label>
+    <button type="submit">ΥΠΟΛΟΓΙΣΜΟΣ</button>
+    <div id="result"></div>
+  </form>
+
+  <script>
+    document.getElementById('ewsForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const rr = parseInt(document.getElementById('rr').value);
+      const spo2 = parseInt(document.getElementById('spo2').value);
+      const temp = parseFloat(document.getElementById('temp').value);
+      const bp = parseInt(document.getElementById('bp').value);
+      const hr = parseInt(document.getElementById('hr').value);
+      const conscious = parseInt(document.getElementById('conscious').value);
+      const o2 = parseInt(document.getElementById('o2').value);
+
+      function scoreRR(rr) {
+        if (rr <= 8) return 3;
+        if (rr >= 9 && rr <= 11) return 1;
+        if (rr >= 12 && rr <= 20) return 0;
+        if (rr >= 21 && rr <= 24) return 2;
+        return 3;
+      }
+
+      function scoreSpO2(spo2) {
+        if (spo2 <= 91) return 3;
+        if (spo2 >= 92 && spo2 <= 93) return 2;
+        if (spo2 === 94 || spo2 === 95) return 1;
+        return 0;
+      }
+
+      function scoreTemp(temp) {
+        if (temp < 35.0) return 3;
+        if (temp >= 35.1 && temp <= 36.0) return 1;
+        if (temp >= 36.1 && temp <= 38.0) return 0;
+        if (temp >= 38.1 && temp <= 39.0) return 1;
+        return 2;
+      }
+
+      function scoreBP(bp) {
+        if (bp <= 90) return 3;
+        if (bp >= 91 && bp <= 100) return 2;
+        if (bp >= 101 && bp <= 109) return 1;
+        if (bp >= 110 && bp <= 199) return 0;
+        return 3;
+      }
+
+      function scoreHR(hr) {
+        if (hr <= 40) return 3;
+        if (hr >= 41 && hr <= 50) return 1;
+        if (hr >= 51 && hr <= 90) return 0;
+        if (hr >= 91 && hr <= 110) return 1;
+        if (hr >= 111 && hr <= 130) return 2;
+        return 3;
+      }
+
+      const total =
+        scoreRR(rr) +
+        scoreSpO2(spo2) +
+        scoreTemp(temp) +
+        scoreBP(bp) +
+        scoreHR(hr) +
+        conscious +
+        o2;
+
+      document.getElementById('result').innerText = `ΣΥΝΟΛΟ ΣΕΠ: ${total}`;
+    });
+  </script>
+</body>
+</html>
